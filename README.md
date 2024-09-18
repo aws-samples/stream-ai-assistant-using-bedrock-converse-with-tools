@@ -23,9 +23,9 @@ This project demonstrates how to build an AI Assistant using AWS Amplify, Amazon
 ## Key Features
 
 - **AWS Amplify Integration**: Seamlessly integrates with Amplify hosting and backend services, facilitating streamlined application deployment.
-- **Amazon Bedrock**: Enhances Large Language Model (LLM) capabilities via the Amazon Bedrock Converse API, supporting features like tool invocation and document summarization.
+- **Amazon Bedrock**: Enhances Large Language Model (LLM) capabilities via the Amazon Bedrock Converse API, supporting features like tool calling and image summarization.
 - **Serverless Streaming**: Uses AWS Lambda for response streaming, ensuring optimal performance and scalability.
-- **AI SDK**: Utilizes Vercel AI SDK to connect the application with the LLM, delivering a refined user experience.
+- **AI SDK**: Leverages Vercel AI SDK to connect the application with the LLM, delivering a refined user experience.
 - **LangChain Support**: Incorporates LangChain to leverage its comprehensive ecosystem and capabilities.
 
 ## Architecture
@@ -38,7 +38,7 @@ Below is an overview of the application architecture:
 
 ### Frontend
 
-This application is based on the [AWS Amplify React+Vite Starter Template](https://github.com/aws-samples/amplify-vite-react-template), and it utilizes React with TypeScript. The design is crafted with [Tailwind CSS](https://tailwindcss.com/) and [shadcn components](https://ui.shadcn.com/), using the [dashboard-03 template](https://ui.shadcn.com/blocks#dashboard-03) for a sleek and efficient UI.
+This application is based on the [AWS Amplify React+Vite Starter Template](https://github.com/aws-samples/amplify-vite-react-template). The design is crafted with [Tailwind CSS](https://tailwindcss.com/) and [shadcn components](https://ui.shadcn.com/), using the [dashboard-03 template](https://ui.shadcn.com/blocks#dashboard-03) for a sleek and efficient UI.
 
 For creating a conversational user interface, the `useChat()` hook from the [Vercel AI SDK](https://sdk.vercel.ai/) is employed.
 
@@ -47,7 +47,7 @@ For creating a conversational user interface, the `useChat()` hook from the [Ver
 The backend is built with AWS services:
 
 - **Lambda Functions**: These functions call the [Bedrock Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html) to send and receive messages from Amazon Bedrock models. Node.js 20 serves as the runtime environment.
-- **Model Selection**: Choose from three models supporting tool invocation:
+- **Model Selection**: Choose from three models supporting tool calling:
   - Anthropic Claude 3 Haiku
   - Anthropic Claude 3 Sonnet
   - Anthropic Claude 3.5 Sonnet
@@ -75,11 +75,17 @@ Refer to [this guide](https://docs.aws.amazon.com/bedrock/latest/userguide/getti
 
 ### Deploy
 
-To deploy the project to your AWS account, simply click the button below:
+To deploy the project to your AWS account, first create a repository in your GitHub account using this project as a starter:
 
-[![Deploy with Amplify](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/aws-samples/stream-ai-assistant-using-bedrock-converse-with-tools)
+[Create repository from template](https://github.com/new?owner=aws-samples&template_name=stream-ai-assistant-using-bedrock-converse-with-tools&template_owner=aws-samples)
 
-Follow the guided steps, it will fork this project to your GitHub account and connect it to a new Amplify application.
+Use the form in GitHub to finalize your repo's creation. Now that the repository has been created, deploy it with Amplify:
+
+[Deploy to AWS](https://console.aws.amazon.com/amplify/create/repo-branch)
+
+Select GitHub. After you give Amplify access to your GitHub account via the popup window, pick the repository and `main` branch to deploy. Make no other changes and click through the flow to Save and deploy.
+
+When the build completes, visit the newly deployed branch by selecting "Visit deployed URL".
 
 ## Local Development
 
@@ -87,7 +93,7 @@ For local development, you'll use the Amplify [cloud sandbox](https://docs.ampli
 
 You'll need Node.js 20 for this:
 
-1. Clone the repository and install dependencies:
+1. Install dependencies:
 
    ```bash
    npm install
