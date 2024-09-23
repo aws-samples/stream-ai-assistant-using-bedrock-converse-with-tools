@@ -54,6 +54,7 @@ export const handler = awslambda.streamifyResponse(
         model = "anthropic.claude-3-haiku-20240307-v1:0";
       }
 
+      // See https://sdk.vercel.ai/docs/ai-sdk-ui/chatbot-with-tool-calling#api-route
       const result = await streamText({
         model: bedrock(model),
         temperature: settings.temperature,

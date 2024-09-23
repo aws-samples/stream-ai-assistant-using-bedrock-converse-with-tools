@@ -18,15 +18,15 @@
 
 ## Overview
 
-This project demonstrates how to build an AI Assistant using AWS Amplify, Amazon Bedrock, Vercel AI SDK, and LangChain. With these tools, you can create an AI Assistant capable of providing intelligent responses and performing various tasks efficiently.
+This project demonstrates how to build an AI Assistant using [AWS Amplify](https://docs.amplify.aws/), [Amazon Bedrock](https://aws.amazon.com/bedrock/), [Vercel AI SDK](https://sdk.vercel.ai/), and [LangChain.js](https://js.langchain.com/docs/introduction/). The AI Assistant is designed to call tools and can interact with images.
 
 ## Key Features
 
 - **AWS Amplify Integration**: Seamlessly integrates with Amplify hosting and backend services, facilitating streamlined application deployment.
-- **Amazon Bedrock**: Enhances Large Language Model (LLM) capabilities via the Amazon Bedrock Converse API, supporting features like tool calling and image summarization.
-- **Serverless Streaming**: Uses AWS Lambda for response streaming, ensuring optimal performance and scalability.
-- **AI SDK**: Leverages Vercel AI SDK to connect the application with the LLM, delivering a refined user experience.
-- **LangChain Support**: Incorporates LangChain to leverage its comprehensive ecosystem and capabilities.
+- **Amazon Bedrock**: Enhances Large Language Model (LLM) capabilities via the Amazon Bedrock [Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html), supporting features like tool calling and image description.
+- **Serverless Streaming**: Uses AWS Lambda for [response streaming](https://docs.aws.amazon.com/lambda/latest/dg/configuration-response-streaming.html), ensuring optimal performance and scalability.
+- **AI SDK**: Leverages [Vercel AI SDK](https://sdk.vercel.ai/) to connect the application with the LLM, delivering a refined user experience.
+- **LangChain Support**: Incorporates [LangChain.js](https://js.langchain.com/docs/introduction/) to leverage its comprehensive ecosystem and capabilities.
 
 ## Architecture
 
@@ -38,15 +38,15 @@ Below is an overview of the application architecture:
 
 ### Frontend
 
-This application is based on the [AWS Amplify React+Vite Starter Template](https://github.com/aws-samples/amplify-vite-react-template). The design is crafted with [Tailwind CSS](https://tailwindcss.com/) and [shadcn components](https://ui.shadcn.com/), using the [dashboard-03 template](https://ui.shadcn.com/blocks#dashboard-03) for a sleek and efficient UI.
+This application is based on the AWS Amplify React+Vite [starter template](https://github.com/aws-samples/amplify-vite-react-template). The design is crafted with [Tailwind CSS](https://tailwindcss.com/) and [shadcn components](https://ui.shadcn.com/), using a [dashboard template](https://ui.shadcn.com/blocks#dashboard-03) for a sleek and efficient UI.
 
-For creating a conversational user interface, the `useChat()` hook from the [Vercel AI SDK](https://sdk.vercel.ai/) is employed.
+For creating a conversational user interface, the `useChat()` hook from [Vercel AI SDK](https://sdk.vercel.ai/) is employed.
 
 ### Backend
 
 The backend is built with AWS services:
 
-- **Lambda Functions**: These functions call the [Bedrock Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html) to send and receive messages from Amazon Bedrock models. Node.js 20 serves as the runtime environment.
+- **Lambda Functions**: These functions call the Bedrock [Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html) to send and receive messages from Amazon Bedrock models. Node.js 20 serves as the runtime environment.
 - **Model Selection**: Choose from three models supporting tool calling:
   - Anthropic Claude 3 Haiku
   - Anthropic Claude 3 Sonnet
@@ -77,13 +77,13 @@ Refer to [this guide](https://docs.aws.amazon.com/bedrock/latest/userguide/getti
 
 To deploy the project to your AWS account, first create a repository in your GitHub account using this project as a starter:
 
-[Create repository from template](https://github.com/new?owner=aws-samples&template_name=stream-ai-assistant-using-bedrock-converse-with-tools&template_owner=aws-samples)
+[Create repository from template](https://github.com/new?owner=aws-samples&template_name=stream-ai-assistant-using-bedrock-converse-with-tools&template_owner=aws-samples) 🪄
 
 Use the form in GitHub to finalize your repo's creation. Now that the repository has been created, deploy it with Amplify:
 
-[Deploy to AWS](https://console.aws.amazon.com/amplify/create/repo-branch)
+[Deploy to AWS](https://console.aws.amazon.com/amplify/create/repo-branch) 🚀
 
-Select GitHub. After you give Amplify access to your GitHub account via the popup window, pick the repository and `main` branch to deploy. Make no other changes and click through the flow to Save and deploy.
+Select GitHub. After you give Amplify access to your GitHub account via the popup window, pick the repository and `main` branch to deploy. Make no other changes and click through the flow to "Save and deploy".
 
 When the build completes, visit the newly deployed branch by selecting "Visit deployed URL".
 

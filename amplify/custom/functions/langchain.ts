@@ -1,12 +1,15 @@
 import { ChatBedrockConverse } from "@langchain/aws";
 import {
   AIMessage,
+  AIMessageChunk,
   HumanMessage,
   MessageContent,
-  SystemMessage,
 } from "@langchain/core/messages";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { tool } from "@langchain/core/tools";
 import { LangChainAdapter, Message } from "ai";
-import { pipeline, Readable } from "stream";
+import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
+import { pipeline } from "stream";
 import { promisify } from "util";
 import { z } from "zod";
 
@@ -22,6 +25,16 @@ const settingsSchema = z.object({
   temperature: z.number(),
   system: z.string(),
 });
+
+const tools = [
+  tool(({ city }) => `The weather in ${city} is sunny`, {
+    name: "weather_tool",
+    description: "Get the weather for a city",
+    schema: z.object({
+      city: z.string().describe("The city to get the weather for"),
+    }),
+  }),
+];
 
 /**
  * AWS Lambda with Streaming Response.
@@ -54,52 +67,90 @@ export const handler = awslambda.streamifyResponse(
         model = "anthropic.claude-3-haiku-20240307-v1:0";
       }
 
-      // See https://js.langchain.com/v0.2/docs/integrations/chat/bedrock_converse/
+      const prompt = ChatPromptTemplate.fromMessages([
+        ["system", settings.system],
+        ["placeholder", "{chat_history}"],
+        ["placeholder", "{agent_scratchpad}"],
+      ]);
+
+      // See https://v03.api.js.langchain.com/classes/_langchain_aws.ChatBedrockConverse.html
       const llm = new ChatBedrockConverse({
         model,
         temperature: settings.temperature,
       });
 
-      const allMessages = [
-        new SystemMessage(settings.system),
-        ...messages.map((message: Message) => {
-          if (message.role === "user") {
-            const messageWithAttachments: MessageContent = [
-              { type: "text", text: message.content },
-            ];
+      // See https://v03.api.js.langchain.com/functions/langchain.agents.createToolCallingAgent.html
+      const agent = createToolCallingAgent({ llm, tools, prompt });
 
-            if (message.experimental_attachments) {
-              for (const attachment of message.experimental_attachments) {
-                messageWithAttachments.push({
-                  type: "image_url",
-                  image_url: { url: attachment.url },
-                });
-              }
+      const agentExecutor = new AgentExecutor({ agent, tools });
+
+      // Convert the messages to the format expected by LangChain
+      const langchainMessages = messages.map((message: Message) => {
+        if (message.role === "user") {
+          const messageWithAttachments: MessageContent = [
+            { type: "text", text: message.content },
+          ];
+
+          if (message.experimental_attachments) {
+            for (const attachment of message.experimental_attachments) {
+              messageWithAttachments.push({
+                type: "image_url",
+                image_url: { url: attachment.url },
+              });
             }
-
-            return new HumanMessage({
-              content: messageWithAttachments,
-            });
           }
 
-          return new AIMessage(message.content);
-        }),
-      ];
+          return new HumanMessage({
+            content: messageWithAttachments,
+          });
+        }
 
-      const stream = await llm.stream(allMessages);
+        return new AIMessage(message.content);
+      });
+
+      const agentStream = agentExecutor.streamEvents(
+        { chat_history: langchainMessages },
+        { version: "v2" }
+      );
+
+      // See https://github.com/vercel/ai/issues/1791#issuecomment-2238397610
+      const stream = new ReadableStream({
+        async pull(controller) {
+          for await (const { event, data } of agentStream) {
+            if (event === "on_chat_model_stream") {
+              const msg = data?.chunk as AIMessageChunk;
+
+              if ((msg.tool_call_chunks?.length ?? 0) > 0) {
+                console.log("Tool calls", msg.tool_calls);
+              } else if (msg.content) {
+                controller.enqueue(msg.content as string);
+              }
+            }
+          }
+          controller.close();
+        },
+      });
+
+      const response = LangChainAdapter.toDataStreamResponse(stream);
+      const responseBody = response.body;
+
+      if (!responseBody) {
+        throw new Error("No response body");
+      }
+
+      const responseHeaders: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value;
+      });
 
       // Set the response status code and headers
       // See https://github.com/serverless/serverless/discussions/12090#discussioncomment-6685223
       responseStream = awslambda.HttpResponseStream.from(responseStream, {
-        statusCode: 200,
-        headers,
+        statusCode: response.status,
+        headers: responseHeaders,
       });
 
-      const requestStream = Readable.from(
-        LangChainAdapter.toDataStream(stream)
-      );
-
-      await promisify(pipeline)(requestStream, responseStream);
+      await promisify(pipeline)(responseBody, responseStream);
     } catch (error) {
       if (error instanceof UnauthorizedError) {
         responseStream = awslambda.HttpResponseStream.from(responseStream, {

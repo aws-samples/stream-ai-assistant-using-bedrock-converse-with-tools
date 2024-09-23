@@ -12,7 +12,7 @@
   "dependencies": {
     "@ai-sdk/amazon-bedrock": "^0.0.9",
     "@aws-amplify/ui-react": "^6.1.13",
-    "@langchain/aws": "^0.0.9",
+    "@langchain/aws": "^0.1.0",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-select": "^2.1.1",
@@ -23,6 +23,7 @@
     "aws-jwt-verify": "^4.0.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "langchain": "^0.3.2",
     "lucide-react": "^0.418.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -58,6 +59,6 @@
     "vite": "^5.4.6"
   },
   "overrides": {
-    "@langchain/core": "0.2.23"
+    "@langchain/core": "0.3.3"
   }
 }
