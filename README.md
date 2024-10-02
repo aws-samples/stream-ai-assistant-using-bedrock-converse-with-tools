@@ -20,6 +20,8 @@
 
 This project demonstrates how to build an AI Assistant using [AWS Amplify](https://docs.amplify.aws/), [Amazon Bedrock](https://aws.amazon.com/bedrock/), [Vercel AI SDK](https://sdk.vercel.ai/), and [LangChain.js](https://js.langchain.com/docs/introduction/). The AI Assistant is designed to call tools and can interact with images.
 
+https://github.com/user-attachments/assets/6b3d7535-7ff4-49d6-8af4-5534cec4b252
+
 ## Key Features
 
 - **AWS Amplify Integration**: Seamlessly integrates with Amplify hosting and backend services, facilitating streamlined application deployment.
