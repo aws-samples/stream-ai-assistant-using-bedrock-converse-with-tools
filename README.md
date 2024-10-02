@@ -40,7 +40,7 @@ Below is an overview of the application architecture:
 
 ### Frontend
 
-This application is based on the AWS Amplify React+Vite [starter template](https://github.com/aws-samples/amplify-vite-react-template). The design is crafted with [Tailwind CSS](https://tailwindcss.com/) and [shadcn components](https://ui.shadcn.com/), using a [dashboard template](https://ui.shadcn.com/blocks#dashboard-03) for a sleek and efficient UI.
+This application is based on the AWS Amplify React [starter template](https://github.com/aws-samples/amplify-vite-react-template). The design is crafted with [Tailwind CSS](https://tailwindcss.com/) and [shadcn](https://ui.shadcn.com/) components, using a [dashboard template](https://ui.shadcn.com/blocks#dashboard-03) for a sleek and efficient UI.
 
 For creating a conversational user interface, the `useChat()` hook from [Vercel AI SDK](https://sdk.vercel.ai/) is employed.
 
@@ -59,7 +59,7 @@ The backend is built with AWS services:
 Two Lambda functions are available to interact with Bedrock Converse API:
 
 - **AI Function**: Uses the [Vercel AI SDK](https://sdk.vercel.ai/).
-- **LangChain Function**: Employs [LangChain.js](https://js.langchain.com/v0.2/docs/introduction/).
+- **LangChain Function**: Employs [LangChain.js](https://js.langchain.com/docs/introduction/).
 
 The interface allows you to select between these two frameworks and test their respective approaches.
 
