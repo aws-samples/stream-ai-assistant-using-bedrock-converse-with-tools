@@ -13,7 +13,7 @@ import {
 } from "aws-cdk-lib/aws-cloudfront";
 import {
   FunctionUrlOrigin,
-  S3Origin,
+  S3StaticWebsiteOrigin,
 } from "aws-cdk-lib/aws-cloudfront-origins";
 import { Effect, PolicyStatement, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import {
@@ -44,7 +44,7 @@ const bedrockPolicy = new PolicyStatement({
 const aiFunction = new NodejsFunction(customResourceStack, "AiFunction", {
   entry: fileURLToPath(new URL("custom/functions/ai.ts", import.meta.url)),
   architecture: Architecture.ARM_64,
-  runtime: Runtime.NODEJS_20_X,
+  runtime: Runtime.NODEJS_22_X,
   timeout: Duration.seconds(60),
   bundling: {
     externalModules: [],
@@ -76,7 +76,7 @@ const langchainFunction = new NodejsFunction(
       new URL("custom/functions/langchain.ts", import.meta.url)
     ),
     architecture: Architecture.ARM_64,
-    runtime: Runtime.NODEJS_20_X,
+    runtime: Runtime.NODEJS_22_X,
     timeout: Duration.seconds(60),
     bundling: {
       externalModules: [],
@@ -107,7 +107,7 @@ const chatBucket = new Bucket(customResourceStack, "ChatBucket", {
 
 const authFunction = new NodejsFunction(customResourceStack, "AuthFunction", {
   entry: fileURLToPath(new URL("custom/functions/auth.ts", import.meta.url)),
-  runtime: Runtime.NODEJS_20_X,
+  runtime: Runtime.NODEJS_22_X,
   bundling: {
     externalModules: [],
   },
@@ -120,7 +120,7 @@ const chatDistribution = new Distribution(
   "ChatDistribution",
   {
     defaultBehavior: {
-      origin: new S3Origin(chatBucket, {
+      origin: new S3StaticWebsiteOrigin(chatBucket, {
         customHeaders: {
           "X-Env-User-Pool-Id": backend.auth.resources.userPool.userPoolId,
           "X-Env-Client-Id":

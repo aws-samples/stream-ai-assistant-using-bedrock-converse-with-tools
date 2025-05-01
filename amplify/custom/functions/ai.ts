@@ -1,5 +1,5 @@
 import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
-import { convertToCoreMessages, streamText } from "ai";
+import { streamText } from "ai";
 import { pipeline } from "stream";
 import { promisify } from "util";
 import { z } from "zod";
@@ -17,11 +17,7 @@ const settingsSchema = z.object({
   system: z.string(),
 });
 
-const bedrock = createAmazonBedrock({
-  bedrockOptions: {
-    region: process.env.AWS_REGION,
-  },
-});
+const bedrock = createAmazonBedrock();
 
 /**
  * AWS Lambda with Streaming Response.
@@ -55,11 +51,14 @@ export const handler = awslambda.streamifyResponse(
       }
 
       // See https://sdk.vercel.ai/docs/ai-sdk-ui/chatbot-with-tool-calling#api-route
-      const result = await streamText({
+      const result = streamText({
         model: bedrock(model),
         temperature: settings.temperature,
         system: settings.system,
-        messages: convertToCoreMessages(messages),
+        messages,
+        onError: (error) => {
+          console.error(error);
+        },
         tools: {
           // server-side tool with execute function
           getWeatherInformation: {

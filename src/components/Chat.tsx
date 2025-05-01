@@ -1,5 +1,5 @@
-import { ToolInvocation } from "ai";
-import { Message, useChat } from "ai/react";
+import { Message } from "ai";
+import { useChat } from "@ai-sdk/react";
 import { fetchAuthSession } from "aws-amplify/auth";
 import { CornerDownLeft, LoaderCircle, Paperclip } from "lucide-react";
 import { ChangeEvent, useState } from "react";
@@ -29,10 +29,10 @@ export function Chat({ settings }: Props) {
     handleInputChange,
     handleSubmit,
     addToolResult,
-    isLoading,
+    status,
   } = useChat({
     api: chatUrl + endpoint,
-    maxToolRoundtrips: 5,
+    maxSteps: 5,
     body: { settings },
 
     // run client-side tools that are automatically executed
@@ -64,6 +64,8 @@ export function Chat({ settings }: Props) {
     },
   });
 
+  const isLoading = status === "streaming" || status === "submitted";
+
   const handleAttachments = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) {
@@ -93,50 +95,56 @@ export function Chat({ settings }: Props) {
             )}
           >
             {m.role === "assistant" ? (
-              <Markdown>{m.content}</Markdown>
+              <>
+                {m.parts?.map((part) => {
+                  if (part.type === "text") {
+                    return <Markdown key={part.text}>{part.text}</Markdown>;
+                  }
+                  if (part.type === "tool-invocation") {
+                    const toolInvocation = part.toolInvocation;
+                    const toolCallId = toolInvocation.toolCallId;
+                    const addResult = (result: string) =>
+                      addToolResult({ toolCallId, result });
+
+                    // render confirmation tool (client-side tool with user interaction)
+                    if (toolInvocation.toolName === "askForConfirmation") {
+                      return (
+                        <div key={toolCallId}>
+                          {toolInvocation.args.message}
+                          <div className="flex gap-3 mt-4">
+                            <Button
+                              variant={
+                                "result" in toolInvocation &&
+                                toolInvocation.result === "Yes"
+                                  ? "default"
+                                  : "outline"
+                              }
+                              onClick={() => addResult("Yes")}
+                            >
+                              Yes
+                            </Button>
+                            <Button
+                              variant={
+                                "result" in toolInvocation &&
+                                toolInvocation.result === "No"
+                                  ? "default"
+                                  : "outline"
+                              }
+                              onClick={() => addResult("No")}
+                            >
+                              No
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    }
+                  }
+                  return null;
+                })}
+              </>
             ) : (
               m.content + (m.experimental_attachments ? " 📎" : "")
             )}
-            {m.toolInvocations?.map((toolInvocation: ToolInvocation) => {
-              const toolCallId = toolInvocation.toolCallId;
-              const addResult = (result: string) =>
-                addToolResult({ toolCallId, result });
-
-              // render confirmation tool (client-side tool with user interaction)
-              if (toolInvocation.toolName === "askForConfirmation") {
-                return (
-                  <div key={toolCallId}>
-                    {toolInvocation.args.message}
-                    <div className="flex gap-3 mt-4">
-                      <Button
-                        variant={
-                          "result" in toolInvocation &&
-                          toolInvocation.result === "Yes"
-                            ? "default"
-                            : "outline"
-                        }
-                        onClick={() => addResult("Yes")}
-                      >
-                        Yes
-                      </Button>
-                      <Button
-                        variant={
-                          "result" in toolInvocation &&
-                          toolInvocation.result === "No"
-                            ? "default"
-                            : "outline"
-                        }
-                        onClick={() => addResult("No")}
-                      >
-                        No
-                      </Button>
-                    </div>
-                  </div>
-                );
-              }
-
-              return null;
-            })}
           </div>
         ))}
         {isLoading && <LoaderCircle className="animate-spin text-primary" />}
