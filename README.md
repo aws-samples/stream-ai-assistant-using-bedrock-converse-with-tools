@@ -1,3 +1,5 @@
+> [!WARNING] > **This project is deprecated.** The architecture demonstrated here (CloudFront + Lambda streaming with Origin Access Control) has been superseded by native [API Gateway response streaming for REST APIs](https://aws.amazon.com/about-aws/whats-new/2025/11/api-gateway-response-streaming-rest-apis/), which provides a simpler integration with improved time-to-first-byte performance, extended timeouts up to 15 minutes, and support for payloads larger than 10 MB. Consider using API Gateway + Lambda streaming for new projects.
+
 # Create an AI Assistant with AWS Amplify, Amazon Bedrock w/ Tools, AI SDK and LangChain
 
 ## Table of Contents
